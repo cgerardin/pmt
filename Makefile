@@ -15,7 +15,7 @@ endif
 all: $(EXEC)
 	
 $(EXEC): $(CFILES)
-	@mkdir build
+	@mkdir -p build
 	@$(CC) $(CFLAGS) -o build/$@ $(CFILES) $(LFLAGS)
 
 .PHONY: clean
