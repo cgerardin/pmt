@@ -1,20 +1,50 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "main.h"
 #include "map.h"
+
+int read_mapfile(char filename[], MAP *map) {
+
+	FILE *mapFile = fopen(filename, "rb+");
+	
+	if(mapFile == NULL) {
+		return PMT_ERROR_OPEN_MAP;
+	}
+	
+	fread(&map->magic, sizeof(char), 2, mapFile);
+	fread(&map->version, sizeof(int), 1, mapFile);
+	fread(&map->name, sizeof(char), 255, mapFile);
+	fread(&map->sizeW, sizeof(int), 1, mapFile);
+	fread(&map->sizeH, sizeof(int), 1, mapFile);
+	fread(&map->hero, sizeof(int), 1, mapFile);
+
+	if(map->magic[0]!='m' && map->magic[1]!='f') {
+		return PMT_WRONG_MAP_FORMAT;
+	} else if(map->version!=PMT_VERSION) {
+		return PMT_WRONG_MAP_VERSION;
+	}
+	
+	fread(&map->data, sizeof(char), map->sizeW*map->sizeH, mapFile);
+	
+	fclose(mapFile);
+	
+	return PMT_SUCCESS;
+
+}
 
 int make_mapfile(char filename[], char name[], int sizeW, int sizeH) {
 
 	int totalSize = sizeW*sizeH;
 
 	if(totalSize<4) {
-		return 1;
+		return PMT_WRONG_MAP_FORMAT;
 	}
 	
 	FILE *mapFile = fopen(filename, "wb");
 	if(mapFile == NULL) {
 		
-		return 2;
+		return PMT_ERROR_OPEN_MAP;
 	}
 		
 	MAP m;
@@ -29,7 +59,7 @@ int make_mapfile(char filename[], char name[], int sizeW, int sizeH) {
 	
 	// Fill with empty chars
 	for(int i=0; i<totalSize; i++) {
-		m.data[i] = '0';
+		m.data[i] = BLOCK_EMPTY;
 	}
 	
 	fwrite(&m.magic, sizeof(char), 2, mapFile);
@@ -42,6 +72,6 @@ int make_mapfile(char filename[], char name[], int sizeW, int sizeH) {
 
 	fclose(mapFile);
 
-	return 0;
+	return PMT_SUCCESS;
 	
 }

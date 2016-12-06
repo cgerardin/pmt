@@ -14,6 +14,12 @@ typedef struct {
 	char data[5000];	
 } MAP;
 
+#define PMT_ERROR_OPEN_MAP 1
+#define PMT_WRONG_MAP_FORMAT 2
+#define PMT_WRONG_MAP_VERSION 3
+
+int read_mapfile(char filename[], MAP *map);
+
 int make_mapfile(char filename[], char name[], int sizeW, int sizeH);
 
 #endif /* H_MAP */

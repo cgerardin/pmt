@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <ncurses.h>
+#include "main.h"
 #include "input.h"
 #include "map.h"
 
 int main(int argc, char *argv[]) {
+
+	int error=PMT_SUCCESS;
 
 	char filename[255];
 	int write_mode = 0;
@@ -21,7 +24,7 @@ int main(int argc, char *argv[]) {
 		write_mode = 1;
 	} else {
 		printf("Usage : %s {-w} [map]\n", argv[0]);
-		return 1;
+		return PMT_ERROR;
 	}
 	
 	strcat(filename, ".pmtmf");
@@ -45,55 +48,38 @@ int main(int argc, char *argv[]) {
 	
 		printf("Writing %s... ", filename);
 	
-		int errn = make_mapfile(filename, mapName, w, h);
+		error = make_mapfile(filename, mapName, w, h);
 	
-		if(errn == 1) {
+		if(error == PMT_WRONG_MAP_FORMAT) {
 			printf("\nMap size must be >= 4 !\n");
-			return 1;
-		} else if(errn == 2) {
+			return PMT_ERROR;
+		} else if(error == PMT_ERROR_OPEN_MAP) {
 			printf("\nUnable to open map file !\n");
-			return 1;
+			return PMT_ERROR;
 		}
 		
 		printf("Done\n");
 		
-		return 0;
+		return PMT_SUCCESS;
 		
 	}
 	
 	/*
 	 * 1 - Normal mode
 	 */
-	 
-	FILE *mapFile = fopen(filename, "rb+");
-	
-	if(mapFile == NULL) {
-		printf("Unable to open %s map file !\n", filename);
-		return 1;
-	}
 	
 	MAP m;
-	fread(&m.magic, sizeof(char), 2, mapFile);
-	fread(&m.version, sizeof(int), 1, mapFile);
-	fread(&m.name, sizeof(char), 255, mapFile);
-	fread(&m.sizeW, sizeof(int), 1, mapFile);
-	fread(&m.sizeH, sizeof(int), 1, mapFile);
-	fread(&m.hero, sizeof(int), 1, mapFile);
-
-	if(m.magic[0]!='m' && m.magic[1]!='f') {
+	error = read_mapfile(filename, &m);
+	
+	if(error == PMT_WRONG_MAP_FORMAT) {
 		printf("Wrong map file format !\n");
-		return 1;
-	} else if(m.version!=1) {
+		return PMT_ERROR;
+	} else if(error == PMT_WRONG_MAP_VERSION) {
 		printf("Unsuported map file version !\n");
-		return 1;
+		return PMT_ERROR;
 	}
 	
-	printf("Loading '%s' %dx%d map...\n", m.name, m.sizeW, m.sizeH);
-	
-	int totalSize = m.sizeW*m.sizeH;
-	fread(&m.data, sizeof(char), totalSize, mapFile);
-	
-	fclose(mapFile);
+	printf("Running '%s' %dx%d map...\n", m.name, m.sizeW, m.sizeH);
 	
 	
 	/*
@@ -102,7 +88,8 @@ int main(int argc, char *argv[]) {
 	 
 	initscr();
 	
-	char k=0;
+	char key=0;
+	int totalSize = m.sizeW*m.sizeH;
 	int nextPosition=m.hero;
 	
 	while(1) {
@@ -144,9 +131,9 @@ int main(int argc, char *argv[]) {
 		
 		refresh();
 		
-		k=getch();
+		key=getch();
 		
-		switch(k) {
+		switch(key) {
 		
 			case 'A':
 				if(m.hero - m.sizeW >= 0)
@@ -166,7 +153,7 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'q':
 				endwin();
-				return 0;
+				return PMT_SUCCESS;
 
 		}
 		
@@ -176,15 +163,8 @@ int main(int argc, char *argv[]) {
 			nextPosition = m.hero;
 		}
 		
-		
-		
 		clear();
 	
 	}
-	
-	
-	endwin();
-
-	return 0;
 	
 }
