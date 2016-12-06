@@ -1,6 +1,9 @@
 #ifndef H_MAP
 #define H_MAP
 
+#define BLOCK_EMPTY	'0'
+#define BLOCK_WALL	'1'
+
 typedef struct {
 	char magic[2];
 	int version;

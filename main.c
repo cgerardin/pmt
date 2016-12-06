@@ -5,8 +5,6 @@
 #include "input.h"
 #include "map.h"
 
-#define BLOCK_WALL 49
-
 int main(int argc, char *argv[]) {
 
 	char filename[255];
@@ -143,8 +141,6 @@ int main(int argc, char *argv[]) {
 			}
 		
 		}
-		
-		printw("M: %d > %d\n", m.data[nextPosition], 46+BLOCK_WALL);
 		
 		refresh();
 		
