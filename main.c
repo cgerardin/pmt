@@ -66,10 +66,6 @@ int main(int argc, char *argv[]) {
 		
 	}
 	
-	/*
-	 * 1 - Normal mode
-	 */
-	
 	MAP m;
 	error = read_mapfile(filename, &m);
 	
@@ -82,12 +78,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	printf("Running '%s' %dx%d map...\n", m.name, m.sizeW, m.sizeH);
-	
-	
-	/*
-	 * Display map
-	 */
-	 
+
 	initscr();
 	
 	char key=0;
