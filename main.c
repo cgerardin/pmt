@@ -80,6 +80,7 @@ int main(int argc, char *argv[]) {
 	printf("Running '%s' %dx%d map...\n", m.name, m.sizeW, m.sizeH);
 
 	initscr();
+	curs_set(0);
 	start_color();
 	
 	char key=0;
@@ -273,10 +274,9 @@ int main(int argc, char *argv[]) {
 
 		}
 		
-		if(edit_mode 
-			|| m.data[nextPosition] != PMT_BLOCK_WALL1 
-			|| m.data[nextPosition] != PMT_BLOCK_WALL2 
-			|| m.data[nextPosition] != PMT_BLOCK_WALL3) 
+		if(edit_mode || (m.data[nextPosition] != PMT_BLOCK_WALL1 
+			&& m.data[nextPosition] != PMT_BLOCK_WALL2 
+			&& m.data[nextPosition] != PMT_BLOCK_WALL3)) 
 		{
 			m.hero = nextPosition;
 		} else {
