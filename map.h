@@ -3,6 +3,8 @@
 
 #define BLOCK_EMPTY	'0'
 #define BLOCK_WALL	'1'
+#define BLOCK_ROAD	'2'
+#define BLOCK_TREE	'3'
 
 typedef struct {
 	char magic[2];

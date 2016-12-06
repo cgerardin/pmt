@@ -100,18 +100,26 @@ int main(int argc, char *argv[]) {
 	
 			if(i == m.hero) {
 		
-				printw("&");
+				printw("i");
 			
 			} else {
 		
 				switch(m.data[i]) {
 			
 					case '0':
-						displayChar = '_';
+						displayChar = ' ';
 						break;
 					
 					case '1':
 						displayChar = '#';
+						break;
+						
+					case '2':
+						displayChar = 'O';
+						break;
+					
+					case '3':
+						displayChar = 'A';
 						break;
 			
 				}
