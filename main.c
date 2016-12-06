@@ -80,10 +80,20 @@ int main(int argc, char *argv[]) {
 	printf("Running '%s' %dx%d map...\n", m.name, m.sizeW, m.sizeH);
 
 	initscr();
+	start_color();
 	
 	char key=0;
 	int totalSize = m.sizeW*m.sizeH;
 	int nextPosition=m.hero;
+	
+	init_pair(1, COLOR_CYAN, COLOR_WHITE); // PMT_TILE_HERO
+	init_pair(2, COLOR_BLACK, COLOR_WHITE); // PMT_TILE_EMPTY
+    init_pair(3, COLOR_BLACK, COLOR_MAGENTA); // PMT_TILE_WALL
+    init_pair(4, COLOR_WHITE, COLOR_MAGENTA); // PMT_TILE_DOOR
+    init_pair(5, COLOR_YELLOW, COLOR_WHITE); // PMT_TILE_ROAD
+    init_pair(6, COLOR_GREEN, COLOR_WHITE); // PMT_TILE_TREE
+    init_pair(7, COLOR_BLACK, COLOR_YELLOW); // PMT_TILE_CHEST
+    init_pair(8, COLOR_RED, COLOR_WHITE); // PMT_TILE_LICHE
 	
 	while(1) {
 	
@@ -92,33 +102,64 @@ int main(int argc, char *argv[]) {
 		for(int i=0; i<totalSize; i++) {
 	
 			if(i == m.hero) {
+			
+				attron(COLOR_PAIR(1));
 				
 				if(!edit_mode) {
-					printw("i");
+					printw("%c", PMT_TILE_HERO);
 				} else {
-					printw("+");
+					printw("*");
 				}
 			
 			} else {
 		
 				switch(m.data[i]) {
-			
-					case '0':
-						displayChar = ' ';
+
+					case PMT_BLOCK_EMPTY:
+						attron(COLOR_PAIR(2));
+						displayChar = PMT_TILE_EMPTY;
 						break;
 					
-					case '1':
-						displayChar = '#';
+					case PMT_BLOCK_WALL1:
+						attron(COLOR_PAIR(3));
+						displayChar = PMT_TILE_WALL1;
 						break;
 						
-					case '2':
-						displayChar = 'O';
+					case PMT_BLOCK_WALL2:
+						attron(COLOR_PAIR(3));
+						displayChar = PMT_TILE_WALL2;
 						break;
 					
-					case '3':
-						displayChar = 'A';
+					case PMT_BLOCK_WALL3:
+						attron(COLOR_PAIR(3));
+						displayChar = PMT_TILE_WALL3;
 						break;
-			
+					
+					case PMT_BLOCK_DOOR:
+						attron(COLOR_PAIR(4));
+						displayChar = PMT_TILE_DOOR;
+						break;
+						
+					case PMT_BLOCK_ROAD:
+						attron(COLOR_PAIR(5));
+						displayChar = PMT_TILE_ROAD;
+						break;
+					
+					case PMT_BLOCK_TREE:
+						attron(COLOR_PAIR(6));
+						displayChar = PMT_TILE_TREE;
+						break;
+						
+					case PMT_BLOCK_CHEST:
+						attron(COLOR_PAIR(7));
+						displayChar = PMT_TILE_CHEST;
+						break;
+						
+					case PMT_BLOCK_LICHE:
+						attron(COLOR_PAIR(8));
+						displayChar = PMT_TILE_LICHE;
+						break;
+				
 				}
 			
 				printw("%c", displayChar);
@@ -133,9 +174,13 @@ int main(int argc, char *argv[]) {
 			}
 		
 		}
-		
+
 		if(edit_mode) {
-			printw("%c : Empty | %c : Wall | %c : Road | %c : Tree\n", BLOCK_EMPTY, BLOCK_WALL, BLOCK_ROAD, BLOCK_TREE);
+			printw("%c : %c (Empty) | %c : %c(Wall 1) | ", PMT_BLOCK_EMPTY, PMT_TILE_EMPTY, PMT_BLOCK_WALL1, PMT_TILE_WALL1);
+			printw("%c : %c (Wall 2) | %c : %c (Wall 3) | ", PMT_BLOCK_WALL2, PMT_TILE_WALL2, PMT_BLOCK_WALL3, PMT_TILE_WALL3);
+			printw("%c : %c (Door) \n %c : %c (Road) | ", PMT_BLOCK_DOOR, PMT_TILE_DOOR, PMT_BLOCK_ROAD, PMT_TILE_ROAD);
+			printw("%c : %c (Tree) | %c : %c (Chest)", PMT_BLOCK_TREE, PMT_TILE_TREE, PMT_BLOCK_CHEST, PMT_TILE_CHEST);
+			printw("%c : %c (Liche) \n", PMT_BLOCK_LICHE, PMT_TILE_LICHE);
 		}
 		
 		refresh();
@@ -164,24 +209,49 @@ int main(int argc, char *argv[]) {
 					nextPosition = m.hero - 1;
 				break;
 				
-			case BLOCK_EMPTY:
+			case PMT_BLOCK_EMPTY:
 				if(edit_mode)
-					m.data[m.hero] = BLOCK_EMPTY;
+					m.data[m.hero] = PMT_BLOCK_EMPTY;
 				break;
 				
-			case BLOCK_WALL:
+			case PMT_BLOCK_WALL1:
 				if(edit_mode)
-					m.data[m.hero] = BLOCK_WALL;
+					m.data[m.hero] = PMT_BLOCK_WALL1;
+				break;
+			
+			case PMT_BLOCK_WALL2:
+				if(edit_mode)
+					m.data[m.hero] = PMT_BLOCK_WALL2;
 				break;
 				
-			case BLOCK_ROAD:
+			case PMT_BLOCK_WALL3:
 				if(edit_mode)
-					m.data[m.hero] = BLOCK_ROAD;
+					m.data[m.hero] = PMT_BLOCK_WALL3;
 				break;
 				
-			case BLOCK_TREE:
+			case PMT_BLOCK_DOOR:
 				if(edit_mode)
-					m.data[m.hero] = BLOCK_TREE;
+					m.data[m.hero] = PMT_BLOCK_DOOR;
+				break;
+			
+			case PMT_BLOCK_ROAD:
+				if(edit_mode)
+					m.data[m.hero] = PMT_BLOCK_ROAD;
+				break;
+				
+			case PMT_BLOCK_TREE:
+				if(edit_mode)
+					m.data[m.hero] = PMT_BLOCK_TREE;
+				break;
+			
+			case PMT_BLOCK_CHEST:
+				if(edit_mode)
+					m.data[m.hero] = PMT_BLOCK_CHEST;
+				break;
+				
+			case PMT_BLOCK_LICHE:
+				if(edit_mode)
+					m.data[m.hero] = PMT_BLOCK_LICHE;
 				break;
 				
 			case 's':
@@ -203,7 +273,11 @@ int main(int argc, char *argv[]) {
 
 		}
 		
-		if(m.data[nextPosition] != BLOCK_WALL || edit_mode) {
+		if(edit_mode 
+			|| m.data[nextPosition] != PMT_BLOCK_WALL1 
+			|| m.data[nextPosition] != PMT_BLOCK_WALL2 
+			|| m.data[nextPosition] != PMT_BLOCK_WALL3) 
+		{
 			m.hero = nextPosition;
 		} else {
 			nextPosition = m.hero;

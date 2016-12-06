@@ -65,7 +65,6 @@ int make_mapfile(char filename[], char name[], int sizeW, int sizeH) {
 	
 	FILE *mapFile = fopen(filename, "wb");
 	if(mapFile == NULL) {
-		
 		return PMT_ERROR_OPEN_MAP;
 	}
 		
@@ -81,7 +80,7 @@ int make_mapfile(char filename[], char name[], int sizeW, int sizeH) {
 	
 	// Fill with empty chars
 	for(int i=0; i<totalSize; i++) {
-		m.data[i] = BLOCK_EMPTY;
+		m.data[i] = PMT_BLOCK_EMPTY;
 	}
 	
 	fwrite(&m.magic, sizeof(char), 2, mapFile);
