@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
 						break;
 				
 				}
-			
+
 				printw("%c", displayChar);
 			
 			}
@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
 				break;
 				
 			case 'B':
-				if(m.hero <= totalSize-1)
+				if(m.hero + m.sizeW <= totalSize-1)
 					nextPosition = m.hero + m.sizeW;
 				break;
 				
