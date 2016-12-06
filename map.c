@@ -33,6 +33,28 @@ int read_mapfile(char filename[], MAP *map) {
 
 }
 
+int write_mapfile(MAP *map, char filename[]) {
+
+	FILE *mapFile = fopen(filename, "wb");
+	
+	if(mapFile == NULL) {
+		return PMT_ERROR_OPEN_MAP;
+	}
+	
+	fwrite(&map->magic, sizeof(char), 2, mapFile);
+	fwrite(&map->version, sizeof(int), 1, mapFile);
+	fwrite(&map->name, sizeof(char), 255, mapFile);
+	fwrite(&map->sizeW, sizeof(int), 1, mapFile);
+	fwrite(&map->sizeH, sizeof(int), 1, mapFile);
+	fwrite(&map->hero, sizeof(int), 1, mapFile);
+	fwrite(map->data, sizeof(char), map->sizeW*map->sizeH, mapFile);
+
+	fclose(mapFile);
+	
+	return PMT_SUCCESS;
+
+}
+
 int make_mapfile(char filename[], char name[], int sizeW, int sizeH) {
 
 	int totalSize = sizeW*sizeH;

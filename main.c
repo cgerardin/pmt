@@ -11,7 +11,8 @@ int main(int argc, char *argv[]) {
 	int error=PMT_SUCCESS;
 
 	char filename[255];
-	int write_mode = 0;
+	int make_mode = 0;
+	int edit_mode = 0;
 	
 	/*
 	 * Args parsing
@@ -19,21 +20,22 @@ int main(int argc, char *argv[]) {
 
 	if(argc == 2) {
 		strcpy(filename, argv[1]);
-	} else if(argc == 3 && strncmp(argv[1], "-w", 2) == 0) {
+	} else if(argc == 3 && strncmp(argv[1], "-m", 2) == 0) {
 		strcpy(filename, argv[2]);
-		write_mode = 1;
+		make_mode = 1;
+	} else if(argc == 3 && strncmp(argv[1], "-e", 2) == 0) {
+		strcpy(filename, argv[2]);
+		edit_mode = 1;
 	} else {
-		printf("Usage : %s {-w} [map]\n", argv[0]);
+		printf("Usage :\n\t%s {-m|-e} [map]\n\nOptions :\n", argv[0]);
+		printf("\t-w : Make an empty [map].pmtmf file\n");
+		printf("\t-e : Open [map].pmtmf in edit mode\n");
 		return PMT_ERROR;
 	}
 	
 	strcat(filename, ".pmtmf");
-	
-	/*
-	 * 0 - Write mode
-	 */
-	 
-	if(write_mode) {
+
+	if(make_mode) {
 	
 		char mapName[255];
 		int w=0, h=0;
@@ -99,8 +101,12 @@ int main(int argc, char *argv[]) {
 		for(int i=0; i<totalSize; i++) {
 	
 			if(i == m.hero) {
-		
-				printw("i");
+				
+				if(!edit_mode) {
+					printw("i");
+				} else {
+					printw("+");
+				}
 			
 			} else {
 		
@@ -137,6 +143,10 @@ int main(int argc, char *argv[]) {
 		
 		}
 		
+		if(edit_mode) {
+			printw("%c : Empty | %c : Wall | %c : Road | %c : Tree\n", BLOCK_EMPTY, BLOCK_WALL, BLOCK_ROAD, BLOCK_TREE);
+		}
+		
 		refresh();
 		
 		key=getch();
@@ -147,25 +157,62 @@ int main(int argc, char *argv[]) {
 				if(m.hero - m.sizeW >= 0)
 					nextPosition = m.hero - m.sizeW;
 				break;
+				
 			case 'B':
 				if(m.hero <= totalSize-1)
 					nextPosition = m.hero + m.sizeW;
 				break;
+				
 			case 'C':
 				if(m.hero%m.sizeW < m.sizeW-1)
 					nextPosition = m.hero + 1;
 				break;
+				
 			case 'D':
 				if(m.hero%m.sizeW > 0)
 					nextPosition = m.hero - 1;
 				break;
+				
+			case BLOCK_EMPTY:
+				if(edit_mode)
+					m.data[m.hero] = BLOCK_EMPTY;
+				break;
+				
+			case BLOCK_WALL:
+				if(edit_mode)
+					m.data[m.hero] = BLOCK_WALL;
+				break;
+				
+			case BLOCK_ROAD:
+				if(edit_mode)
+					m.data[m.hero] = BLOCK_ROAD;
+				break;
+				
+			case BLOCK_TREE:
+				if(edit_mode)
+					m.data[m.hero] = BLOCK_TREE;
+				break;
+				
+			case 's':
+				if(edit_mode) {
+					endwin();
+					if(write_mapfile(&m, filename) == PMT_SUCCESS) {
+						printf("Map successfully saved.\n");
+						return PMT_SUCCESS;
+					} else {
+						printf("Unable to save map file.\n");
+						return PMT_ERROR;
+					}
+				}
+				break;
+				
 			case 'q':
 				endwin();
 				return PMT_SUCCESS;
 
 		}
 		
-		if(m.data[nextPosition] != BLOCK_WALL) {
+		if(m.data[nextPosition] != BLOCK_WALL || edit_mode) {
 			m.hero = nextPosition;
 		} else {
 			nextPosition = m.hero;

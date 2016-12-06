@@ -22,6 +22,8 @@ typedef struct {
 
 int read_mapfile(char filename[], MAP *map);
 
+int write_mapfile(MAP *map, char filename[]);
+
 int make_mapfile(char filename[], char name[], int sizeW, int sizeH);
 
 #endif /* H_MAP */
